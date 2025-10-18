@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz da Calini</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #a8e6cf, #56ab2f);
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+  }
+
+  .quiz-container {
+    background-color: rgba(0, 100, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 600px;
+    margin: 20px auto;
+    transition: all 0.5s ease;
+  }
+
+  input {
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 1em;
+    width: 60%;
+  }
+
+  button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    font-size: 1em;
+    background-color: #2e7d32;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  button:hover {
+    background-color: #1b5e20;
+    transform: scale(1.05);
+  }
+
+  img {
+    width: 120px;
+    height: 120px;
+    margin: 5px;
+    border-radius: 15px;
+    object-fit: cover;
+  }
+
+  #resultado {
+    font-size: 1.2em;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: rgba(0, 100, 0, 0.8);
+    border-radius: 15px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  #feedback {
+    margin-top: 15px;
+    font-style: italic;
+  }
+
+</style>
+</head>
+<body>
+
+<h1>Quiz da Calini</h1>
+
+<!-- Espaço para fotos -->
+<div id="fotos">
+  <img src="WhatsApp Image 2025-10-04 at 23.57.23.jpeg" alt="Kalline sorrindo">
+  <img src="WhatsApp Image 2025-10-16 at 00.39.30.jpeg" alt="Kalline e Luna">
+  <img src="WhatsApp Image 2025-10-17 at 18.12.58.jpeg" alt="Kalline e vestido novo">
+</div>
+
+<div class="quiz-container" id="nome-container">
+  <p>Qual é seu nome?</p>
+  <input type="text" id="nome-input" placeholder="Digite seu nome">
+  <button onclick="verificarNome()">Enviar</button>
+  <p id="nome-msg"></p>
+</div>
+
+<div class="quiz-container hidden" id="quiz-container">
+  <p id="pergunta"></p>
+  <input type="text" id="resposta" placeholder="Digite sua resposta">
+  <button onclick="responder()">Responder</button>
+  <p id="feedback"></p>
+</div>
+
+<div id="resultado" class="hidden"></div>
+
+<script>
+let score = 0;
+let perguntaAtual = 0;
+
+const perguntas = [
+  {
+    texto: "A madame gosta do Dedês? Sim, claro ou com certeza?",
+    respostasCertas: ["sim", "claro", "com certeza"],
+    feedbackPositivo: "Eu sabia, sou muito importante pra você, hehe!",
+    feedbackNegativo: "Gosta sim, mas pela sua ousadia, não vai ganhar ponto >:)",
+    feedbackOutro: "Parece que você inventou sua própria resposta. Responda com as opções disponíveis!"
+  },
+  {
+    texto: "Verdadeiro ou falso? Eu o Dedês só penso em você o tempo todo",
+    respostasCertas: ["verdadeiro"],
+    feedbackPositivo: "Hehe, que bom que você sabe disso ;)",
+    feedbackNegativo: "Falso?? Então você acha que eu consigo te esquecer? Impossível!!",
+    feedbackOutro: "Não invente respostas, apenas aceite que eu só penso em você, hehe!"
+  },
+  {
+    texto: "Vamos nos casar futuramente? Sim, claro ou com certeza?",
+    respostasCertas: ["sim", "claro", "com certeza"],
+    feedbackPositivo: "Então é oficial: vou te amar até o infinito!!",
+    feedbackNegativo: "Não?? Então vou ter que te conquistar com mais abraços!!",
+    feedbackOutro: "Você insiste em inventar respostas, não é? Já estou ficando bravo >:("
+  },
+  {
+    texto: "Vamos ter quantos filhos? Digite apenas um número inteiro",
+    respostasCertas: ["1", "2", "3"],
+    feedbackPositivo: ["Uma família pequena e cheia de amor! Será incrível!", 
+                       "Uma família pequena e cheia de amor! Será incrível!", 
+                       "This is us influenciou legal aqui hein!! Eu topo essa ideia :D"],
+    feedbackOutro: "Eita, família grande. Se é mesmo o que quer, vamo nessa!"
+  }
+];
+
+const finais = [
+  "Você acabou de ganhar um abraço virtual gigante!!",
+  "Você desbloqueou: título de 'Melhor Companheira de Aventuras da Vida'",
+  "Prepare-se! Um milhão de abraços te aguardam no próximo capítulo",
+  "Aviso: completar este quiz aumenta minha vontade de ter pra sempre em 1000%"
+];
+
+function verificarNome() {
+  const nome = document.getElementById("nome-input").value.toLowerCase();
+  const msg = document.getElementById("nome-msg");
+  const nomeContainer = document.getElementById("nome-container");
+  const quizContainer = document.getElementById("quiz-container");
+
+  if (nome === "kalline") {
+    msg.textContent = "Então é a pessoa certa!";
+    nomeContainer.classList.add("hidden");
+    quizContainer.classList.remove("hidden");
+    mostrarPergunta();
+  } else {
+    msg.textContent = "Epa! Você não é a Kalline! Sai daqui, o coração do Dedês só tem espaço pra Madame Ka!";
+  }
+}
+
+function mostrarPergunta() {
+  const pergunta = perguntas[perguntaAtual];
+  document.getElementById("pergunta").textContent = pergunta.texto;
+  document.getElementById("resposta").value = "";
+  document.getElementById("feedback").textContent = "";
+}
+
+function responder() {
+  const respostaInput = document.getElementById("resposta").value.toLowerCase();
+  const pergunta = perguntas[perguntaAtual];
+  const feedback = document.getElementById("feedback");
+
+  if (perguntaAtual === 3) { // pergunta dos filhos
+    if (pergunta.respostasCertas.includes(respostaInput)) {
+      const index = parseInt(respostaInput) - 1;
+      feedback.textContent = pergunta.feedbackPositivo[index] || pergunta.feedbackPositivo[0];
+      score += 1;
+    } else {
+      feedback.textContent = pergunta.feedbackOutro;
+    }
+  } else {
+    if (pergunta.respostasCertas.includes(respostaInput)) {
+      feedback.textContent = pergunta.feedbackPositivo;
+      score += 1;
+    } else if (respostaInput === "não") {
+      feedback.textContent = pergunta.feedbackNegativo;
+    } else {
+      feedback.textContent = pergunta.feedbackOutro;
+    }
+  }
+
+  perguntaAtual++;
+  if (perguntaAtual < perguntas.length) {
+    setTimeout(mostrarPergunta, 4000);
+  } else {
+    setTimeout(mostrarResultado, 4000);
+  }
+}
+
+function mostrarResultado() {
+  document.getElementById("quiz-container").classList.add("hidden");
+  const resultado = document.getElementById("resultado");
+  resultado.classList.remove("hidden");
+  resultado.innerHTML = `<p>Quiz finalizado! Você fez ${score} pontos!</p><p>${finais[Math.floor(Math.random()*finais.length)]}</p>`;
+}
+</script>
+
+</body>
+</html>
+
